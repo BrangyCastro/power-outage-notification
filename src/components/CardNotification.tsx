@@ -54,8 +54,7 @@ const CardNotification = ({
               }`}
             >
               <p>
-                Hora Desde: {detalle.horaDesde} - Hora Hasta:{" "}
-                {detalle.horaHasta}
+                Desde: {detalle.horaDesde} - Hasta: {detalle.horaHasta}
               </p>
               <p className="text-sm text-gray-600">
                 Comentario: {detalle.comentario}

@@ -133,7 +133,7 @@ const Notifications: React.FC = () => {
 
       {data?.notificaciones && data.notificaciones.length > 1 ? (
         <div className="p-4 mx-auto ">
-          <div className="flex border-b border-gray-300">
+          <div className="flex border-b border-gray-300 gap-4 overflow-x-auto">
             {data.notificaciones.map((notification) => {
               return (
                 <button
