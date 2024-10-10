@@ -38,6 +38,9 @@ export interface ResponseAdapter {
   notificaciones: {
     fechaCorte: string;
     cuentaContrato: string;
+    direccion: string;
+    fechaRegistro: string;
+    idUnidadNegocios: number;
     detalles: PlanningDetail[];
   }[];
 }

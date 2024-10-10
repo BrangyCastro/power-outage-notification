@@ -1,4 +1,4 @@
-import { format, parse } from "date-fns";
+import { format, parse, differenceInMinutes } from "date-fns";
 import { useEffect, useState } from "react";
 
 const TimeRange = ({
@@ -27,10 +27,14 @@ const TimeRange = ({
     );
   }, [is24HourFormat]);
 
+  const difference = differenceInMinutes(hastaDate, desdeDate);
+  const hours = Math.floor(difference / 60);
+
   return (
     <div className="">
       <p>
-        Desde: {formattedHoraDesde} - Hasta: {formattedHoraHasta}
+        Desde: {formattedHoraDesde} - Hasta: {formattedHoraHasta}{" "}
+        <strong>({hours} horas de corte)</strong>
       </p>
     </div>
   );
