@@ -5,7 +5,7 @@ function App() {
     <>
       <header className="bg-gray-800 p-2 text-white text-center">
         <h1 className="text-2xl">
-          Consulta de Notificaciones{" "}
+          Horarios de cortes de energía eléctrica{" "}
           <span className="text-sm text-gray-500">v0.0.1 (no oficial)</span>
         </h1>
       </header>
