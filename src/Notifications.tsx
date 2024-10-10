@@ -8,6 +8,11 @@ const Notifications: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [identification, setIdentification] = useState<string>("");
   const [activeTab, setActiveTab] = useState<string>("");
+  const [is24HourFormat, setIs24HourFormat] = useState(true);
+
+  const toggleTimeFormat = () => {
+    setIs24HourFormat(!is24HourFormat);
+  };
 
   const fetchData = async (identification: string) => {
     if (!identification) return;
@@ -106,14 +111,19 @@ const Notifications: React.FC = () => {
 
   return (
     <div className="p-4 max-w-3xl mx-auto bg-white rounded-xl shadow-lg">
-      <form onSubmit={handleSubmit} className="mb-4">
-        <input
-          type="number"
-          value={identification}
-          onChange={(e) => setIdentification(e.target.value)}
-          className="border border-gray-300 rounded-md p-2 w-full"
-          placeholder="Ingrese la identificación"
-        />
+      <form onSubmit={handleSubmit} className="mb-4 flex gap-2 justify-between">
+        <div>
+          <label className="text-sm text-gray-500">
+            Ingrese número de identificación del titular del medidor
+          </label>
+          <input
+            type="number"
+            value={identification}
+            onChange={(e) => setIdentification(e.target.value)}
+            className="border border-gray-300 rounded-md p-2 w-full"
+            placeholder="Ingrese la identificación"
+          />
+        </div>
         <button
           type="submit"
           className="mt-2 bg-blue-500 text-white py-2 px-4 rounded-md"
@@ -151,8 +161,11 @@ const Notifications: React.FC = () => {
               );
             })}
           </div>
-
           <div className="mt-2 grid grid-cols-1 gap-2">
+            <button onClick={toggleTimeFormat}>
+              Cambiar a{" "}
+              <strong>{is24HourFormat ? "12 horas" : "24 horas"}</strong>
+            </button>
             {filtrarPorNumeroContrato(
               agruparPorFechaYCuenta(data),
               activeTab
@@ -161,6 +174,7 @@ const Notifications: React.FC = () => {
                 key={index}
                 detalles={notification.detalles}
                 fechaCorte={notification.fechaCorte}
+                is24HourFormat={is24HourFormat}
               />
             ))}
           </div>
@@ -186,6 +200,10 @@ const Notifications: React.FC = () => {
                   {agruparPorFechaYCuenta(data).details.fechaRegistro}
                 </h3>
               </div>
+              <button onClick={toggleTimeFormat}>
+                Cambiar a{" "}
+                <strong>{is24HourFormat ? "12 horas" : "24 horas"}</strong>
+              </button>
               {Object.entries(agruparPorFechaYCuenta(data).notificaciones).map(
                 ([index, notification]) => {
                   return (
@@ -193,6 +211,7 @@ const Notifications: React.FC = () => {
                       key={index}
                       detalles={notification.detalles}
                       fechaCorte={notification.fechaCorte}
+                      is24HourFormat={is24HourFormat}
                     />
                   );
                 }

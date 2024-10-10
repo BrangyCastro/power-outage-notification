@@ -1,12 +1,15 @@
 import { isSameDay, parse, isWithinInterval } from "date-fns";
 import { PlanningDetail } from "../interface";
+import TimeRange from "./TimeRange";
 
 const CardNotification = ({
   fechaCorte,
   detalles,
+  is24HourFormat,
 }: {
   fechaCorte: string;
   detalles: PlanningDetail[];
+  is24HourFormat: boolean;
 }) => {
   const isPowerCut = (
     fechaHoraCorte: string,
@@ -53,9 +56,11 @@ const CardNotification = ({
                   : "border-blue-500 bg-blue-50"
               }`}
             >
-              <p>
-                Desde: {detalle.horaDesde} - Hasta: {detalle.horaHasta}
-              </p>
+              <TimeRange
+                horaDesde={detalle.horaDesde}
+                horaHasta={detalle.horaHasta}
+                is24HourFormat={is24HourFormat}
+              />
               <p className="text-sm text-gray-600">
                 Comentario: {detalle.comentario}
               </p>
