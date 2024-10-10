@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { dataMock } from "./dataMock";
 import { isSameDay, parse, isWithinInterval } from "date-fns";
 
 interface PlanningDetail {
@@ -43,7 +42,7 @@ interface ResponseAdapter {
 }
 
 const Notifications: React.FC = () => {
-  const [data, setData] = useState<ApiResponse | null>(dataMock);
+  const [data, setData] = useState<ApiResponse | null>();
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [identification, setIdentification] = useState<string>("");
