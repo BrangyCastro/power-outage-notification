@@ -1,51 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { isSameDay, parse, isWithinInterval } from "date-fns";
-
-interface PlanningDetail {
-  alimentador: string;
-  fechaCorte: string;
-  horaDesde: string;
-  horaHasta: string;
-  comentario: string;
-  fechaRegistro: string;
-  fechaHoraCorte: string;
-}
-
-interface Notification {
-  idUnidadNegocios: number;
-  cuentaContrato: string;
-  alimentador: string;
-  cuen: string;
-  direccion: string;
-  fechaRegistro: string;
-  detallePlanificacion: PlanningDetail[];
-}
-
-interface ApiResponse {
-  resp: string;
-  mensaje: string | null;
-  mensajeError: string | null;
-  extra: string | null;
-  notificaciones: Notification[];
-}
-
-interface ResponseAdapter {
-  details: {
-    idUnidadNegocios: number;
-    cuentaContrato: string;
-    alimentador: string;
-    cuen: string;
-    direccion: string;
-    fechaRegistro: string;
-  };
-  notificaciones: { [fechaCorte: string]: PlanningDetail[] };
-}
+import CardNotification from "./components/CardNotification";
+import { ApiResponse, PlanningDetail, ResponseAdapter } from "./interface";
 
 const Notifications: React.FC = () => {
-  const [data, setData] = useState<ApiResponse | null>();
+  const [data, setData] = useState<ApiResponse | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [identification, setIdentification] = useState<string>("");
+  const [activeTab, setActiveTab] = useState<string>("200054509332");
 
   const fetchData = async (identification: string) => {
     if (!identification) return;
@@ -83,40 +45,33 @@ const Notifications: React.FC = () => {
     fetchData(identification);
   };
 
-  function agruparPorFechaCorte(data: ApiResponse): ResponseAdapter {
-    const agrupado: { [fechaCorte: string]: PlanningDetail[] } = {};
+  function agruparPorFechaYCuenta(data: ApiResponse): ResponseAdapter {
+    const agrupado: {
+      [key: string]: { cuenta: string; detalles: PlanningDetail[] };
+    } = {};
 
     data.notificaciones.forEach((notificacion) => {
-      const {
-        idUnidadNegocios,
-        cuentaContrato,
-        alimentador,
-        cuen,
-        direccion,
-        fechaRegistro,
-      } = notificacion;
+      const { cuentaContrato, detallePlanificacion } = notificacion;
 
-      notificacion.detallePlanificacion.forEach((detalle) => {
-        if (!agrupado[detalle.fechaCorte]) {
-          agrupado[detalle.fechaCorte] = [];
+      detallePlanificacion.forEach((detalle) => {
+        const key = `${detalle.fechaCorte}-${cuentaContrato}`;
+
+        if (!agrupado[key]) {
+          agrupado[key] = {
+            cuenta: cuentaContrato,
+            detalles: [],
+          };
         }
-        agrupado[detalle.fechaCorte].push(detalle);
+        agrupado[key].detalles.push(detalle);
       });
-
-      return {
-        details: {
-          idUnidadNegocios,
-          cuentaContrato,
-          alimentador,
-          cuen,
-          direccion,
-          fechaRegistro,
-        },
-        notificaciones: agrupado, // Retorna el agrupado por fecha
-      };
     });
 
-    // Retornar el objeto con la estructura ResponseAdapter
+    const notificaciones = Object.entries(agrupado).map(([_, value]) => ({
+      fechaCorte: _.split("-")[0],
+      cuentaContrato: value.cuenta,
+      detalles: value.detalles,
+    }));
+
     return {
       details: {
         idUnidadNegocios: data.notificaciones[0].idUnidadNegocios,
@@ -126,38 +81,26 @@ const Notifications: React.FC = () => {
         direccion: data.notificaciones[0].direccion,
         fechaRegistro: data.notificaciones[0].fechaRegistro,
       },
-      notificaciones: agrupado, // Notificaciones agrupadas por fechaCorte
+      notificaciones: notificaciones,
     };
   }
 
-  const isPowerCut = (
-    fechaHoraCorte: string,
-    horaDesde: string,
-    horaHasta: string
-  ): boolean => {
-    const now = new Date();
-
-    const cutDateTime = parse(fechaHoraCorte, "yyyy-MM-dd HH:mm", new Date());
-    const isSameDate = isSameDay(now, cutDateTime);
-
-    const startDate = new Date(cutDateTime);
-    const endDate = new Date(cutDateTime);
-
-    const [startHour, startMinute] = horaDesde.split(":").map(Number);
-    const [endHour, endMinute] = horaHasta.split(":").map(Number);
-
-    startDate.setHours(startHour, startMinute, 0, 0);
-    endDate.setHours(endHour === 0 ? 24 : endHour, endMinute, 0, 0);
-
-    const isWithinTimeRange = isWithinInterval(now, {
-      start: startDate,
-      end: endDate,
-    });
-    return isSameDate && isWithinTimeRange;
-  };
-
   if (loading) {
     return <div className="text-center text-gray-600">Cargando...</div>;
+  }
+
+  function filtrarPorNumeroContrato(
+    notificaciones: ResponseAdapter,
+    numeroContrato: string
+  ): ResponseAdapter {
+    const filteredNotificaciones = notificaciones.notificaciones.filter(
+      (n) => n.cuentaContrato === numeroContrato
+    );
+
+    return {
+      details: notificaciones.details,
+      notificaciones: filteredNotificaciones,
+    };
   }
 
   return (
@@ -188,78 +131,80 @@ const Notifications: React.FC = () => {
         </div>
       )}
 
-      {data?.notificaciones && data.notificaciones.length > 0 ? (
-        <div className={`grid grid-cols-1 gap-2`}>
-          <div className="bg-gray-100 p-4 rounded-lg shadow-md mb-6">
-            <h2 className="text-xl font-semibold">
-              Unidad de Negocios:{" "}
-              {agruparPorFechaCorte(data).details.idUnidadNegocios}
-            </h2>
-            <h3 className="text-lg">
-              Cuenta Contrato:{" "}
-              {agruparPorFechaCorte(data).details.cuentaContrato}
-            </h3>
-            <h3 className="text-lg">
-              Dirección: {agruparPorFechaCorte(data).details.direccion}
-            </h3>
-            <h3 className="text-lg">
-              Fecha de Registro:{" "}
-              {agruparPorFechaCorte(data).details.fechaRegistro}
-            </h3>
-          </div>
-          {Object.entries(agruparPorFechaCorte(data).notificaciones).map(
-            ([fechaCorte, detalles]) => {
+      {data?.notificaciones && data.notificaciones.length > 1 ? (
+        <div className="p-4 mx-auto ">
+          <div className="flex border-b border-gray-300">
+            {data.notificaciones.map((notification) => {
               return (
-                <div
-                  key={fechaCorte}
-                  className="border rounded-lg p-4 bg-white mb-4 shadow"
+                <button
+                  key={notification.cuentaContrato}
+                  onClick={() => setActiveTab(notification.cuentaContrato)}
+                  className={`flex-1 py-2 text-center font-semibold transition-colors duration-300 ${
+                    activeTab === notification.cuentaContrato
+                      ? "border-b-2 border-blue-500 text-blue-500"
+                      : "text-gray-600 hover:text-blue-500"
+                  }`}
                 >
-                  <h4 className="text-xl font-semibold mb-2">{fechaCorte}</h4>
-                  <div className="mt-2 grid grid-cols-1 gap-2">
-                    {detalles.map((detalle, index) => {
-                      const isActiveCutTime = isPowerCut(
-                        detalle.fechaHoraCorte,
-                        detalle.horaDesde,
-                        detalle.horaHasta
-                      );
-                      return (
-                        <div
-                          key={index}
-                          className={`p-4 border-l-4  rounded-md ${
-                            isActiveCutTime
-                              ? "border-red-500 bg-red-50"
-                              : "border-blue-500 bg-blue-50"
-                          }`}
-                        >
-                          <p>
-                            Hora Desde: {detalle.horaDesde} - Hora Hasta:{" "}
-                            {detalle.horaHasta}
-                          </p>
-                          <p className="text-sm text-gray-600">
-                            Comentario: {detalle.comentario}
-                          </p>
-                          <p className="text-sm text-gray-500">
-                            Fecha y Hora de Corte:{" "}
-                            {new Date(detalle.fechaHoraCorte).toLocaleString()}
-                          </p>
-                          {isActiveCutTime && (
-                            <p className="text-red-600 font-semibold">
-                              ¡Corte Activo!
-                            </p>
-                          )}
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
+                  {notification.cuentaContrato}
+                </button>
               );
-            }
-          )}
+            })}
+          </div>
+
+          <div className="mt-2 grid grid-cols-1 gap-2">
+            {filtrarPorNumeroContrato(
+              agruparPorFechaYCuenta(data),
+              activeTab
+            ).notificaciones.map((notification, index) => (
+              <CardNotification
+                key={index}
+                detalles={notification.detalles}
+                fechaCorte={notification.fechaCorte}
+              />
+            ))}
+          </div>
         </div>
       ) : (
         <>
-          {data?.notificaciones && data?.notificaciones.length < 0 && (
-            <p className="text-gray-600">No hay notificaciones disponibles.</p>
+          {data?.notificaciones && data.notificaciones.length > 0 ? (
+            <div className="grid grid-cols-1 gap-2">
+              <div className="bg-gray-100 p-4 rounded-lg shadow-md mb-6">
+                <h2 className="text-xl font-semibold">
+                  Unidad de Negocios:{" "}
+                  {agruparPorFechaYCuenta(data).details.idUnidadNegocios}
+                </h2>
+                <h3 className="text-lg">
+                  Cuenta Contrato:{" "}
+                  {agruparPorFechaYCuenta(data).details.cuentaContrato}
+                </h3>
+                <h3 className="text-lg">
+                  Dirección: {agruparPorFechaYCuenta(data).details.direccion}
+                </h3>
+                <h3 className="text-lg">
+                  Fecha de Registro:{" "}
+                  {agruparPorFechaYCuenta(data).details.fechaRegistro}
+                </h3>
+              </div>
+              {Object.entries(agruparPorFechaYCuenta(data).notificaciones).map(
+                ([index, notification]) => {
+                  return (
+                    <CardNotification
+                      key={index}
+                      detalles={notification.detalles}
+                      fechaCorte={notification.fechaCorte}
+                    />
+                  );
+                }
+              )}
+            </div>
+          ) : (
+            <>
+              {data?.notificaciones && data?.notificaciones.length < 0 && (
+                <p className="text-gray-600">
+                  No hay notificaciones disponibles.
+                </p>
+              )}
+            </>
           )}
         </>
       )}
