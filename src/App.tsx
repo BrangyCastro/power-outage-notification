@@ -13,7 +13,7 @@ function App() {
         <Notifications />
       </main>
       <footer className="bg-gray-800 text-white py-4">
-        <div className="container mx-auto text-center text-gray-500">
+        <div className="container mx-auto text-center text-gray-500 px-2">
           <p>
             Esta página es una mejora de diseño del sitio web oficial de cortes
             de energía de CNELEP, ofreciendo una experiencia más intuitiva y
