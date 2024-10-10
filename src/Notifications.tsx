@@ -7,7 +7,7 @@ const Notifications: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [identification, setIdentification] = useState<string>("");
-  const [activeTab, setActiveTab] = useState<string>("200054509332");
+  const [activeTab, setActiveTab] = useState<string>("");
 
   const fetchData = async (identification: string) => {
     if (!identification) return;
@@ -28,6 +28,7 @@ const Notifications: React.FC = () => {
         setData(null);
       } else {
         setData(result);
+        setActiveTab(result.notificaciones[0].cuentaContrato);
       }
     } catch (error) {
       setError((error as Error).message);
@@ -107,7 +108,7 @@ const Notifications: React.FC = () => {
     <div className="p-4 max-w-3xl mx-auto bg-white rounded-xl shadow-lg">
       <form onSubmit={handleSubmit} className="mb-4">
         <input
-          type="text"
+          type="number"
           value={identification}
           onChange={(e) => setIdentification(e.target.value)}
           className="border border-gray-300 rounded-md p-2 w-full"
@@ -132,7 +133,7 @@ const Notifications: React.FC = () => {
       )}
 
       {data?.notificaciones && data.notificaciones.length > 1 ? (
-        <div className="p-4 mx-auto ">
+        <div className="mx-auto ">
           <div className="flex border-b border-gray-300 gap-4 overflow-x-auto">
             {data.notificaciones.map((notification) => {
               return (
