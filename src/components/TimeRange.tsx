@@ -1,4 +1,4 @@
-import { format, parse, differenceInMinutes } from "date-fns";
+import { format, parse, differenceInMinutes, addDays } from "date-fns";
 import { useEffect, useState } from "react";
 
 const TimeRange = ({
@@ -15,7 +15,12 @@ const TimeRange = ({
 
   // Convertir string a objeto Date
   const desdeDate = parse(horaDesde, "HH:mm", new Date());
-  const hastaDate = parse(horaHasta, "HH:mm", new Date());
+  let hastaDate = parse(horaHasta, "HH:mm", new Date());
+
+  // Si horaHasta es menor que horaDesde, agregar un día a horaHasta
+  if (format(hastaDate, "HH:mm") === "00:00" || hastaDate < desdeDate) {
+    hastaDate = addDays(hastaDate, 1); // Añadir un día a hastaDate
+  }
 
   useEffect(() => {
     setFormattedHoraDesde(
