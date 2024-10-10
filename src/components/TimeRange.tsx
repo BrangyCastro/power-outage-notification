@@ -30,7 +30,7 @@ const TimeRange = ({
     setFormattedHoraHasta(
       is24HourFormat ? format(hastaDate, "HH:mm") : format(hastaDate, "hh:mm a")
     );
-  }, [is24HourFormat]);
+  }, [is24HourFormat, horaDesde, hastaDate]);
 
   const difference = differenceInMinutes(hastaDate, desdeDate);
   const hours = Math.floor(difference / 60);
