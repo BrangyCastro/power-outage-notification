@@ -6,7 +6,9 @@ function App() {
       <header className="bg-gray-800 p-2 text-white text-center">
         <h1 className="text-2xl">
           Horarios de cortes de energía eléctrica{" "}
-          <span className="text-sm text-gray-500">v1.0.0 (no oficial)</span>
+          <span className="text-sm text-gray-500">
+            v1.0.0 (no oficial) by: Brangy Castro
+          </span>
         </h1>
       </header>
       <main className="flex-grow m-2">

@@ -86,6 +86,9 @@ const CardNotification = ({
                 Fecha y Hora de Corte:{" "}
                 {new Date(detalle.fechaHoraCorte).toLocaleString()}
               </p>
+              {status === PowerCutStatus.NOT_CUT && (
+                <p className="text-blue-600 font-semibold">¡Corte Pendiente!</p>
+              )}
               {status === PowerCutStatus.CURRENTLY_CUT && (
                 <p className="text-red-600 font-semibold">¡Corte Activo!</p>
               )}
