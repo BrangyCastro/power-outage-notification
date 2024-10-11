@@ -1,12 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { parse, isAfter, differenceInMilliseconds } from "date-fns";
-import { PowerCutStatus } from "../interface";
 
 const PowerCutTimer: React.FC<{
   fechaHoraCorte: string;
   horaHasta: string;
-  status: PowerCutStatus;
-}> = ({ fechaHoraCorte, horaHasta, status }) => {
+}> = ({ fechaHoraCorte, horaHasta }) => {
   const [remainingTime, setRemainingTime] = useState<number>(0);
 
   useEffect(() => {
@@ -50,35 +48,31 @@ const PowerCutTimer: React.FC<{
 
   return (
     <div>
-      {status === PowerCutStatus.CURRENTLY_CUT && (
-        <div>
-          <h3 className="text-xl font-bold">
-            Tiempo restante para que regrese la luz:
-          </h3>
-          <div className="text-lg flex items-center justify-center gap-1 pt-2">
-            <div className="flex flex-col gap-1 items-center">
-              <span className="p-2 px-5 bg-gray-50 border rounded-md">
-                {formattedTime.hours}
-              </span>
-              <span className="text-xs text-gray-500">horas</span>
-            </div>
-            :
-            <div className="flex flex-col gap-1 items-center">
-              <span className="p-2 px-5 bg-gray-50 border rounded-md">
-                {formattedTime.minutes}
-              </span>
-              <span className="text-xs text-gray-500">minutos</span>
-            </div>
-            :
-            <div className="flex flex-col gap-1 items-center">
-              <span className="p-2 px-5 bg-gray-50 border rounded-md">
-                {formattedTime.seconds}
-              </span>
-              <span className="text-xs text-gray-500">segundos</span>
-            </div>
-          </div>
+      <h3 className="text-base font-bold">
+        Tiempo restante para que regrese la luz:
+      </h3>
+      <div className="text-lg flex items-center justify-center gap-1 py-2">
+        <div className="flex flex-col gap-1 items-center">
+          <span className="p-1 px-5 bg-gray-50 border rounded-md">
+            {formattedTime.hours}
+          </span>
+          <span className="text-xs text-gray-500">horas</span>
         </div>
-      )}
+        <span className="mb-6">:</span>
+        <div className="flex flex-col gap-1 items-center">
+          <span className="p-1 px-5 bg-gray-50 border rounded-md">
+            {formattedTime.minutes}
+          </span>
+          <span className="text-xs text-gray-500">minutos</span>
+        </div>
+        <span className="mb-6">:</span>
+        <div className="flex flex-col gap-1 items-center">
+          <span className="p-1 px-5 bg-gray-50 border rounded-md">
+            {formattedTime.seconds}
+          </span>
+          <span className="text-xs text-gray-500">segundos</span>
+        </div>
+      </div>
     </div>
   );
 };

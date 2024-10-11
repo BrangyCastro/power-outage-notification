@@ -80,6 +80,12 @@ const CardNotification = ({
                   ¡Corte ya realizado!
                 </p>
               )}
+              {status === PowerCutStatus.CURRENTLY_CUT && (
+                <PowerCutTimer
+                  fechaHoraCorte={detalle.fechaHoraCorte}
+                  horaHasta={detalle.horaHasta}
+                />
+              )}
               <TimeRange
                 horaDesde={detalle.horaDesde}
                 horaHasta={detalle.horaHasta}
@@ -92,11 +98,6 @@ const CardNotification = ({
                 Fecha y Hora de Corte:{" "}
                 {new Date(detalle.fechaHoraCorte).toLocaleString()}
               </p>
-              <PowerCutTimer
-                fechaHoraCorte={detalle.fechaHoraCorte}
-                horaHasta={detalle.horaHasta}
-                status={status}
-              />
             </div>
           );
         })}
