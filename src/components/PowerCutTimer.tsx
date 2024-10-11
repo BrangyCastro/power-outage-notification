@@ -56,17 +56,26 @@ const PowerCutTimer: React.FC<{
             Tiempo restante para que regrese la luz:
           </h3>
           <div className="text-lg flex items-center justify-center gap-1 pt-2">
-            <span className="p-2 bg-gray-50 border rounded-md">
-              {formattedTime.hours}
-            </span>
+            <div className="flex flex-col gap-1 items-center">
+              <span className="p-2 px-5 bg-gray-50 border rounded-md">
+                {formattedTime.hours}
+              </span>
+              <span className="text-xs text-gray-500">hora</span>
+            </div>
             :
-            <span className="p-2 bg-gray-50 border rounded-md">
-              {formattedTime.minutes}
-            </span>
+            <div className="flex flex-col gap-1 items-center">
+              <span className="p-2 px-5 bg-gray-50 border rounded-md">
+                {formattedTime.minutes}
+              </span>
+              <span className="text-xs text-gray-500">minutos</span>
+            </div>
             :
-            <span className="p-2 bg-gray-50 border rounded-md">
-              {formattedTime.seconds}
-            </span>
+            <div className="flex flex-col gap-1 items-center">
+              <span className="p-2 px-5 bg-gray-50 border rounded-md">
+                {formattedTime.seconds}
+              </span>
+              <span className="text-xs text-gray-500">segundos</span>
+            </div>
           </div>
         </div>
       )}
