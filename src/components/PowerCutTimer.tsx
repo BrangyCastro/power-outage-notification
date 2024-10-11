@@ -60,7 +60,7 @@ const PowerCutTimer: React.FC<{
               <span className="p-2 px-5 bg-gray-50 border rounded-md">
                 {formattedTime.hours}
               </span>
-              <span className="text-xs text-gray-500">hora</span>
+              <span className="text-xs text-gray-500">horas</span>
             </div>
             :
             <div className="flex flex-col gap-1 items-center">
