@@ -4,7 +4,8 @@ import { parse, isAfter, differenceInMilliseconds } from "date-fns";
 const PowerCutTimer: React.FC<{
   fechaHoraCorte: string;
   horaHasta: string;
-}> = ({ fechaHoraCorte, horaHasta }) => {
+  onTimerEnd: () => void;
+}> = ({ fechaHoraCorte, horaHasta, onTimerEnd }) => {
   const [remainingTime, setRemainingTime] = useState<number>(0);
 
   useEffect(() => {
@@ -19,18 +20,22 @@ const PowerCutTimer: React.FC<{
       setRemainingTime(0);
     }
     setRemainingTime(differenceInMilliseconds(endDate, now));
-  }, [horaHasta, fechaHoraCorte]);
 
-  useEffect(() => {
     const timer = setInterval(() => {
       setRemainingTime((prevTime) => {
-        const newTime = prevTime - 1000; // Disminuir el tiempo en 1 segundo
-        return newTime < 0 ? 0 : newTime; // Asegurarse de no tener valores negativos
+        if (prevTime <= 1000) {
+          clearInterval(timer);
+          setTimeout(() => {
+            onTimerEnd();
+          }, 0);
+          return 0;
+        }
+        return prevTime - 1000;
       });
     }, 1000);
 
-    return () => clearInterval(timer); // Limpiar el intervalo al desmontar
-  }, []);
+    return () => clearInterval(timer);
+  }, [horaHasta, fechaHoraCorte, onTimerEnd]);
 
   const formatTime = (milliseconds: number) => {
     const totalSeconds = Math.floor(milliseconds / 1000);

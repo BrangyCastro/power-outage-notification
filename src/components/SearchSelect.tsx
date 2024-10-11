@@ -26,7 +26,6 @@ const SearchSelect: React.FC<SelectProps> = ({
   return (
     <div className="relative inline-block w-96">
       <select
-        value={selectedCriterion}
         defaultValue={selectedCriterion}
         onChange={handleChange}
         className="block appearance-none w-full bg-white border border-gray-300 text-gray-700 py-2.5 px-4 pr-8 rounded shadow leading-tight focus:outline-none focus:ring focus:ring-blue-500"

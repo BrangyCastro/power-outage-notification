@@ -2,6 +2,7 @@ import { isSameDay, parse, isWithinInterval, isAfter } from "date-fns";
 import { PlanningDetail, PowerCutStatus } from "../interface";
 import TimeRange from "./TimeRange";
 import PowerCutTimer from "./PowerCutTimer";
+import { useState } from "react";
 
 const CardNotification = ({
   fechaCorte,
@@ -12,13 +13,23 @@ const CardNotification = ({
   detalles: PlanningDetail[];
   is24HourFormat: boolean;
 }) => {
+  const [powerCutStatuses, setPowerCutStatuses] = useState<
+    Record<number, PowerCutStatus>
+  >({});
+
+  const handleTimerEnd = (index: number) => {
+    setPowerCutStatuses((prevStatuses) => ({
+      ...prevStatuses,
+      [index]: PowerCutStatus.ALREADY_CUT,
+    }));
+  };
+
   const isPowerCut = (
     fechaHoraCorte: string,
     horaDesde: string,
     horaHasta: string
   ): PowerCutStatus => {
     const now = new Date();
-
     const cutDateTime = parse(fechaHoraCorte, "yyyy-MM-dd HH:mm", new Date());
 
     const startDate = new Date(cutDateTime);
@@ -31,7 +42,6 @@ const CardNotification = ({
     endDate.setHours(endHour === 0 ? 24 : endHour, endMinute, 0, 0);
 
     const isSameDate = isSameDay(now, cutDateTime);
-
     const isWithinTimeRange = isWithinInterval(now, {
       start: startDate,
       end: endDate,
@@ -53,11 +63,14 @@ const CardNotification = ({
       <h4 className="text-xl font-semibold mb-2">{fechaCorte}</h4>
       <div className="mt-2 grid grid-cols-1 gap-2">
         {detalles.map((detalle, index) => {
-          const status = isPowerCut(
-            detalle.fechaHoraCorte,
-            detalle.horaDesde,
-            detalle.horaHasta
-          );
+          const status =
+            powerCutStatuses[index] ??
+            isPowerCut(
+              detalle.fechaHoraCorte,
+              detalle.horaDesde,
+              detalle.horaHasta
+            );
+
           return (
             <div
               key={index}
@@ -84,6 +97,7 @@ const CardNotification = ({
                 <PowerCutTimer
                   fechaHoraCorte={detalle.fechaHoraCorte}
                   horaHasta={detalle.horaHasta}
+                  onTimerEnd={() => handleTimerEnd(index)}
                 />
               )}
               <TimeRange
