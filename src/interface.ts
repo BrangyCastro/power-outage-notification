@@ -50,3 +50,9 @@ export enum PowerCutStatus {
   CURRENTLY_CUT = "CURRENTLY_CUT",
   NOT_CUT = "NOT_CUT",
 }
+
+export enum SearchCriterion {
+  UNIQUE_CODE = "CUEN",
+  CONTRACT_ACCOUNT = "CUENTA_CONTRATO",
+  ID = "IDENTIFICACION",
+}

@@ -1,29 +1,35 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import CardNotification from "./components/CardNotification";
-import { ApiResponse, PlanningDetail, ResponseAdapter } from "./interface";
+import {
+  ApiResponse,
+  PlanningDetail,
+  ResponseAdapter,
+  SearchCriterion,
+} from "./interface";
 import IdentificationQuery from "./components/IdentificationQuery";
 
 const Notifications: React.FC = () => {
   const [data, setData] = useState<ApiResponse | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-  const identificationState = useState<string>("");
-  const [identification] = identificationState;
   const [activeTab, setActiveTab] = useState<string>("");
   const [is24HourFormat, setIs24HourFormat] = useState<boolean>(true);
+
+  const identificationState = useState<string>("");
+  const selectedCriterionState = useState<SearchCriterion>(SearchCriterion.ID);
 
   const toggleTimeFormat = () => {
     setIs24HourFormat(!is24HourFormat);
   };
 
-  const fetchData = async (identification: string) => {
-    if (!identification) return;
+  const fetchData = async (id: string, criterion: SearchCriterion) => {
+    if (!id) return;
 
     setLoading(true);
     setError(null);
     try {
       const response = await fetch(
-        `https://api.cnelep.gob.ec/servicios-linea/v1/notificaciones/consultar/${identification}/IDENTIFICACION`
+        `https://api.cnelep.gob.ec/servicios-linea/v1/notificaciones/consultar/${id}/${criterion}`
       );
       if (!response.ok) {
         throw new Error("Error en la solicitud");
@@ -44,12 +50,8 @@ const Notifications: React.FC = () => {
     }
   };
 
-  useEffect(() => {
-    fetchData(identification);
-  }, []);
-
-  const handleSubmit = () => {
-    fetchData(identification);
+  const handleSubmit = (id: string, criterion: SearchCriterion) => {
+    fetchData(id, criterion);
   };
 
   function agruparPorFechaYCuenta(data: ApiResponse): ResponseAdapter {
@@ -132,6 +134,7 @@ const Notifications: React.FC = () => {
         <div className="p-4 max-w-3xl mx-auto bg-white rounded-xl shadow-lg">
           <IdentificationQuery
             identificationState={identificationState}
+            selectedCriterionState={selectedCriterionState}
             handleSubmit={handleSubmit}
           />
           {error && (

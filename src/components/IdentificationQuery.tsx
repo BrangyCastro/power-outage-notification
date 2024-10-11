@@ -1,12 +1,21 @@
 import React, { useState, useEffect, useRef } from "react";
+import SearchSelect from "./SearchSelect";
+import { SearchCriterion } from "../interface";
+import { criterionLabels } from "../utils";
 
 const IdentificationQuery = ({
   identificationState,
   handleSubmit,
+  selectedCriterionState,
 }: {
   identificationState: [string, React.Dispatch<React.SetStateAction<string>>];
-  handleSubmit: () => void;
+  selectedCriterionState: [
+    SearchCriterion,
+    React.Dispatch<React.SetStateAction<SearchCriterion>>
+  ];
+  handleSubmit: (id: string, criterion: SearchCriterion) => void;
 }) => {
+  const [selectedCriterion, setSelectedCriterion] = selectedCriterionState;
   const [identification, setIdentification] = identificationState;
   const [savedIdentifications, setSavedIdentifications] = useState<string[]>(
     []
@@ -50,16 +59,13 @@ const IdentificationQuery = ({
 
   const handleSubmitQuery = (e: React.FormEvent) => {
     e.preventDefault();
-    handleSubmit();
+    handleSubmit(identification, selectedCriterion);
     handleSaveIdentification();
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-    // Validar que el input solo tenga 10 dígitos
-    if (/^\d{0,10}$/.test(value)) {
-      setIdentification(value);
-    }
+    setIdentification(value);
   };
 
   // Eliminar todas las identificaciones guardadas
@@ -103,24 +109,27 @@ const IdentificationQuery = ({
     <>
       <form
         onSubmit={handleSubmitQuery}
-        className="mb-4 flex gap-2 justify-between"
+        className="mb-4 flex gap-3 justify-between items-end flex-col md:flex-row"
       >
-        <div>
-          <label className="text-sm text-gray-500">
-            Ingrese número de identificación del titular del medidor
-          </label>
+        <SearchSelect
+          onChange={(value) => setSelectedCriterion(value)}
+          selectedCriterionState={selectedCriterionState}
+        />
+        <div className="w-full">
           <input
-            type="text"
+            type="number"
             value={identification}
             onChange={handleChange}
             onClick={handleInputClick}
-            placeholder="Escribe tu identificación"
+            placeholder={`Escribe tu ${criterionLabels[
+              selectedCriterion
+            ].toLowerCase()}`}
             className="w-full p-2 border rounded"
           />
           {showDropdown && savedIdentifications.length > 0 && (
             <ul
               ref={dropdownRef}
-              className="absolute bg-white border border-gray-300 mt-1 w-full max-w-md rounded-md shadow-lg z-10 max-h-40 overflow-auto"
+              className="absolute bg-white border border-gray-300 mt-1 w-full max-w-96 rounded-md shadow-lg z-10 max-h-40 overflow-auto"
             >
               <li className="p-2 hover:bg-gray-200 cursor-pointer flex justify-between items-center">
                 <button
