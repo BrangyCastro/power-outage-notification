@@ -1,12 +1,7 @@
 import { isSameDay, parse, isWithinInterval, isAfter } from "date-fns";
-import { PlanningDetail } from "../interface";
+import { PlanningDetail, PowerCutStatus } from "../interface";
 import TimeRange from "./TimeRange";
-
-enum PowerCutStatus {
-  ALREADY_CUT = "ALREADY_CUT",
-  CURRENTLY_CUT = "CURRENTLY_CUT",
-  NOT_CUT = "NOT_CUT",
-}
+import PowerCutTimer from "./PowerCutTimer";
 
 const CardNotification = ({
   fechaCorte,
@@ -21,7 +16,7 @@ const CardNotification = ({
     fechaHoraCorte: string,
     horaDesde: string,
     horaHasta: string
-  ): string => {
+  ): PowerCutStatus => {
     const now = new Date();
 
     const cutDateTime = parse(fechaHoraCorte, "yyyy-MM-dd HH:mm", new Date());
@@ -74,6 +69,17 @@ const CardNotification = ({
                   : "border-blue-500 bg-blue-50"
               }`}
             >
+              {status === PowerCutStatus.NOT_CUT && (
+                <p className="text-blue-600 font-semibold">¡Corte Pendiente!</p>
+              )}
+              {status === PowerCutStatus.CURRENTLY_CUT && (
+                <p className="text-red-600 font-semibold">¡Corte Activo!</p>
+              )}
+              {status === PowerCutStatus.ALREADY_CUT && (
+                <p className="text-green-600 font-semibold">
+                  ¡Corte ya realizado!
+                </p>
+              )}
               <TimeRange
                 horaDesde={detalle.horaDesde}
                 horaHasta={detalle.horaHasta}
@@ -86,17 +92,11 @@ const CardNotification = ({
                 Fecha y Hora de Corte:{" "}
                 {new Date(detalle.fechaHoraCorte).toLocaleString()}
               </p>
-              {status === PowerCutStatus.NOT_CUT && (
-                <p className="text-blue-600 font-semibold">¡Corte Pendiente!</p>
-              )}
-              {status === PowerCutStatus.CURRENTLY_CUT && (
-                <p className="text-red-600 font-semibold">¡Corte Activo!</p>
-              )}
-              {status === PowerCutStatus.ALREADY_CUT && (
-                <p className="text-green-600 font-semibold">
-                  ¡Corte ya realizado!
-                </p>
-              )}
+              <PowerCutTimer
+                fechaHoraCorte={detalle.fechaHoraCorte}
+                horaHasta={detalle.horaHasta}
+                status={status}
+              />
             </div>
           );
         })}

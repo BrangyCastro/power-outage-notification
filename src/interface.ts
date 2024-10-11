@@ -44,3 +44,9 @@ export interface ResponseAdapter {
     detalles: PlanningDetail[];
   }[];
 }
+
+export enum PowerCutStatus {
+  ALREADY_CUT = "ALREADY_CUT",
+  CURRENTLY_CUT = "CURRENTLY_CUT",
+  NOT_CUT = "NOT_CUT",
+}
