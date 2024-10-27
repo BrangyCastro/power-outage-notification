@@ -187,7 +187,7 @@ const Notifications: React.FC = () => {
 								{activeResultITem &&
 									activeResultITem.detallePlanificacion.length === 0 && (
 										<div className='mt-4 text-center'>
-											En espera de nueva programción de cortes de luz
+											En espera de nueva programción de cortes de luz.
 										</div>
 									)}
 								{filtrarPorNumeroContrato(
@@ -197,10 +197,7 @@ const Notifications: React.FC = () => {
 									<CardNotification
 										key={index}
 										detalles={notification.detalles}
-										fechaCorte={
-											notification.fechaCorte.charAt(0).toUpperCase() +
-											notification.fechaCorte.slice(1)
-										}
+										fechaCorte={notification.fechaCorte}
 										is24HourFormat={is24HourFormat}
 									/>
 								))}
